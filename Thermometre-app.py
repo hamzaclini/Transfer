@@ -111,6 +111,11 @@ atrophie = st.checkbox("Atrophie musculaire spinale")
 autre = st.checkbox("Autre (préciser) :", key="autre_assitance")
 autre_text = st.text_input("Préciser si autre :", key="autre_assistance_text")
 
+membre_superieur_gauche = st.checkbox("Membre supérieur Gauche")
+membre_superieur_droit = st.checkbox("Membre supérieur Droit")
+membre_inferieur_gauche = st.checkbox("Membre inférieur Gauche")
+membre_inferieur_droit = st.checkbox("Membre inférieur Droit")
+
 # Temps avec le trouble moteur
 st.subheader("Depuis combien de temps avez-vous ce trouble moteur ?")
 temps_trouble = st.radio(
@@ -164,6 +169,11 @@ situation_data = {
         "atrophie": atrophie,
         "autre": autre,
         "autre_text": autre_text
+    },
+    "Membre": {"Membre supérieur Gauche": membre_superieur_gauche,
+               "Membre supérieur Gauche": membre_superieur_droit,
+               "Membre supérieur Gauche": membre_inferieur_gauche,
+               "Membre supérieur Gauche": membre_inferieur_gauche
     },
     "temps_trouble": temps_trouble,
     "nature_trouble_type": nature_trouble,
