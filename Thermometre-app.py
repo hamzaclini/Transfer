@@ -42,6 +42,270 @@ client = init_connection()
 sex_mapping = {'male': 0, 'female': 1}
 answers = {}
 
+st.markdown(
+        """<style>
+        div[class*="stSlider"] > label > div[data-testid="stMarkdownContainer"] > p {
+        font-size: 20px;
+                }
+        /* Style for radio buttons */
+    div[class*="stRadio"] > label > div[data-testid="stMarkdownContainer"] > p {
+        font-size: 20px;
+    }
+        </style>
+                """, unsafe_allow_html=True)
+
+
+st.markdown(
+    """
+    <style>
+    .centered_button {
+        display: flex;
+        justify-content: center;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+###
+# Consentement
+
+st.subheader("Je reconnais que :")
+
+participation = st.radio(
+        "Je participe volontairement à cette recherche *",
+        ('Oui', 'Non'),
+        index=None
+    )
+
+retrait = st.radio(
+        "Je peux cesser ma participation à tout moment sans avoir à donner d'explications *",
+        ('Oui', 'Non'),
+        index=None
+    )
+
+confidentialite = st.radio(
+        "Toutes les informations que je fournirai seront confidentielles et mon identité ne sera jamais divulguée *",
+        ('Oui', 'Non'),
+        index=None
+    )
+
+utilisation_donnees = st.radio(
+        "J'autorise la conversation et l'utilisation de ces données confidentielles dans le cadre de la recherche scientifique en psychologie *",
+        ('Oui', 'Non'),
+        index=None
+    )
+
+
+###
+# situation de Handicap:
+st.header("Situation de handicap")
+
+# Nature du trouble moteur
+st.subheader("Nature du trouble moteur :")
+paralysie = st.checkbox("Paralysie")
+sclerose = st.checkbox("Sclérose en plaques")
+dystrophie = st.checkbox("Dystrophie musculaire")
+amputation = st.checkbox("Amputation")
+atrophie = st.checkbox("Atrophie musculaire spinale")
+autre = st.checkbox("Autre (préciser) :", key="autre_assitance")
+autre_text = st.text_input("Préciser si autre :", key="autre_assistance_text")
+
+# Temps avec le trouble moteur
+st.subheader("Depuis combien de temps avez-vous ce trouble moteur ?")
+temps_trouble = st.radio(
+    "",
+    ('Moins de 1 an', '1 à 3 ans', '3 à 5 ans', 'Plus de 5 ans'),
+    index=None
+)
+
+# Nature du trouble moteur
+st.subheader("Le trouble moteur est-il :")
+nature_trouble = st.radio(
+    "",
+    ('Congénital (depuis la naissance)', 'Acquis (après un accident, une maladie, etc.)'),
+    index=None
+)
+
+# Douleurs associées au trouble moteur
+st.subheader("Avez-vous des douleurs associées à votre trouble moteur ?")
+douleurs = st.radio(
+    "",
+    ('Oui, constamment', 'Oui, fréquemment', 'Oui, de temps en temps', 'Non'),
+    index=None
+)
+
+# Aides techniques
+st.subheader("Utilisez-vous des aides techniques autres que la planche de transfert ? (ex. : fauteuil roulant, canne, déambulateur)")
+aides_techniques = st.radio(
+    "",
+    ('Oui', 'Non'),
+    index=None
+)
+
+if aides_techniques == 'Oui':
+    st.subheader("Si oui, lesquelles ?")
+    fauteuil_manuel = st.checkbox("Fauteuil roulant manuel")
+    fauteuil_electrique = st.checkbox("Fauteuil roulant électrique")
+    canne = st.checkbox("Canne")
+    deambulateur = st.checkbox("Déambulateur")
+    orthese = st.checkbox("Orthèse")
+    autre_aide = st.checkbox("Autre (préciser) :",key="autre_aide")
+    autre_aide_text = st.text_input("Préciser si autre :", key="autre_aide_text")
+
+###
+# Collect:
+situation_data = {
+    "nature_trouble": {
+        "paralysie": paralysie,
+        "sclerose": sclerose,
+        "dystrophie": dystrophie,
+        "amputation": amputation,
+        "atrophie": atrophie,
+        "autre": autre,
+        "autre_text": autre_text
+    },
+    "temps_trouble": temps_trouble,
+    "nature_trouble_type": nature_trouble,
+    "douleurs": douleurs,
+    "aides_techniques": {
+        "utilise_aides": aides_techniques,
+        "fauteuil_manuel": fauteuil_manuel if aides_techniques == 'Oui' else None,
+        "fauteuil_electrique": fauteuil_electrique if aides_techniques == 'Oui' else None,
+        "canne": canne if aides_techniques == 'Oui' else None,
+        "deambulateur": deambulateur if aides_techniques == 'Oui' else None,
+        "orthese": orthese if aides_techniques == 'Oui' else None,
+        "autre_aide": autre_aide if aides_techniques == 'Oui' else None,
+        "autre_aide_text": autre_aide_text if aides_techniques == 'Oui' else None
+    }
+}
+
+# 
+
+st.header("Vie quotidienne et autonomie")
+
+# Niveau d'autonomie
+st.subheader("Niveau d'autonomie dans les activités quotidiennes (manger, s'habiller, se laver, etc.) :")
+autonomie = st.radio(
+    "",
+    ('Totalement autonome', 'Partiellement autonome (besoin d\'aide pour certaines activités)', 
+     'Dépendant (besoin d\'aide pour la plupart des activités)', 'Totalement dépendant'),
+    index=None
+)
+
+# Assistance pour déplacements
+st.subheader("Avez-vous besoin d'une assistance pour vos déplacements ?")
+assistance_deplacement = st.radio(
+    "",
+    ('Oui', 'Non'),
+    index=None,
+    key = "assitance"
+)
+
+# Si oui, quel type d'assistance ?
+if assistance_deplacement == 'Oui':
+    st.subheader("Si oui, quel type d'assistance ?")
+    assistance_humaine = st.checkbox("Assistance humaine (aidant familial, assistant personnel)")
+    aide_technique = st.checkbox("Aide technique (fauteuil roulant, déambulateur)")
+    autre_assistance = st.checkbox("Autre (préciser) :")
+    autre_assistance_text = st.text_input("Préciser si autre :")
+
+# Travail
+st.subheader("Travaillez-vous actuellement ?")
+travail = st.radio(
+    "",
+    ('Oui, à temps plein', 'Oui, à temps partiel', 'Non, mais je cherche du travail', 'Non, je ne cherche pas de travail'),
+    index=None,
+    key="travail"
+)
+
+# Collect:
+
+vie_data = {
+    "autonomie": autonomie,
+    "assistance_deplacement": assistance_deplacement,
+    "assistance_details": {
+        "assistance_humaine": assistance_humaine if assistance_deplacement == 'Oui' else None,
+        "aide_technique": aide_technique if assistance_deplacement == 'Oui' else None,
+        "autre_assistance": autre_assistance if assistance_deplacement == 'Oui' else None,
+        "autre_assistance_text": autre_assistance_text if assistance_deplacement == 'Oui' else None
+    },
+    "travail": travail
+}
+
+###
+slider_values_vie = [1,2,3,4,5]
+#slider_strings = ["Très insuffisant", "Insuffisant", "Satisfaisant", "Très satisfaisant"]
+#slider_strings = ["Non", "Un peu", "Oui"]
+slider_strings = ["Pas du tout d'accord", "Plutôt pas d'accord", "Plutôt d'accord", "Assez d'accord", "Très d'accord", "Complètement d'accord"]
+
+
+
+st.header("Qualité de Vie")
+
+def format_func(value):
+    options = ["Très bonne", "Bonne", "Moyenne", "Mauvaise", "Très Mauvaise"]
+    return options[value - 1]  # Subtract 1 to match the zero-based index
+
+# Create the slider
+vie_general = st.select_slider(
+    "Comment évaluez-vous votre qualité de vie générale",
+    options=[5, 4, 3, 2, 1],
+    value=5,
+    format_func=format_func
+)
+
+
+def format_func2(value):
+    options = ["Aucane impact", "Impact mineur", "Impact modéré", "Impact important", "Impact très important"]
+    return options[value - 1]  # Subtract 1 to match the zero-based index
+
+# Create the slider
+vie_sociale = st.select_slider(
+    "Qeul impact votre trouble moteur a-t-il sur votre vie sociale?",
+    options=[1, 2, 3, 4, 5],
+    value=1,
+    format_func=format_func2
+)
+
+commentaires = st.text_input("Autre commentaires :")
+
+# Collect:
+qualite_data = {
+    "qualite_vie": vie_general,
+    "impact_vie_sociale": vie_sociale,
+    "commentaires": commentaires
+}
+
+
+
+# Submission
+#if st.button("Soumettre"):
+#    if temps_trouble is None or nature_trouble is None or douleurs is None or aides_techniques is None:
+#        st.error("Veuillez répondre à toutes les questions.")
+#    else:
+#        st.success("Merci pour vos réponses.")
+#        # Process the responses
+#        responses = {
+#            "paralysie": paralysie,
+#            "sclerose": sclerose,
+#            "dystrophie": dystrophie,
+#            "amputation": amputation,
+#            "atrophie": atrophie,
+#            "autre": autre,
+#            "autre_text": autre_text,
+#            "temps_trouble": temps_trouble,
+#            "nature_trouble": nature_trouble,
+#            "douleurs": douleurs,
+#            "aides_techniques": aides_techniques
+#        }
+#        st.write(responses)
+#        # Here you can add code to save the responses
+
+
+
+###
+
 #Comp = [
 #    "Organisation du matériel (ex. matériel rangé sur la table)",
 #    "Concentration sur tâches exigeantes (ex. reste sur une activité sans se distraire)",
@@ -199,6 +463,9 @@ def user_input_features():
         document = {
         #"_id": ObjectId(),  # Generate a new ObjectId
         "questionaire": "Planche de Transfer",
+        "situation": {},
+        "vie": {},
+        "qualite": {},
         "user": user_data,
         "answers": answers_data
         #"__v": 0
@@ -209,8 +476,11 @@ def user_input_features():
 
 
 document = user_input_features()
+document["situation"] = situation_data
+document["vie"] = vie_data
+document["qualite"] = qualite_data
 
-#if st.button('Enregistrer'):
+#if st.button('Enregisterez'):
 #    write_data(document)
 #save_and_download_csv(df)
 #st.write(document)
@@ -222,12 +492,15 @@ document = user_input_features()
      
 left_co, cent_co,last_co = st.columns(3)
 with cent_co:
-    button = st.button('Enregisterez')
+    button = st.button('Enregistrer')
     st.image("clinicogImg.png", width=200)
     
 if button:
-     write_data(document)
-     st.write("Merci d'avoir participé(e) à ce questionnaire")
+    if all([participation == 'Oui', retrait == 'Oui', confidentialite == 'Oui', utilisation_donnees == 'Oui']):
+        write_data(document)
+        st.write("Merci d'avoir participé(e) à ce questionnaire")
+    else:
+        st.write("Pour enregistrer vos résultats, vous devez consentir à cette étude.")
      
 
 
