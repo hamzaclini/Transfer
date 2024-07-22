@@ -1,2 +1,3 @@
 # requirements.txt
 pymongo==3.12.0
+streamlit_date_picker
