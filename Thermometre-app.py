@@ -118,11 +118,20 @@ membre_inferieur_gauche = st.checkbox("Membre inférieur Gauche")
 membre_inferieur_droit = st.checkbox("Membre inférieur Droit")
 
 # Temps avec le trouble moteur
-st.subheader("Depuis combien de temps avez-vous ce trouble moteur ?")
-temps_trouble = st.radio(
+#st.subheader("Depuis combien de temps avez-vous ce trouble moteur ?")
+#temps_trouble = st.radio(
+#    "",
+#    ('Moins de 1 an', '1 à 3 ans', '3 à 5 ans', 'Plus de 5 ans'),
+#    index=None
+#)
+
+st.subheader("Depuis combien de temps avez-vous ce trouble moteur ? (en années)")
+temps_trouble = st.number_input(
     "",
-    ('Moins de 1 an', '1 à 3 ans', '3 à 5 ans', 'Plus de 5 ans'),
-    index=None
+    min_value=0,
+    max_value=None,
+    value=0,
+    step=1
 )
 
 # Nature du trouble moteur
@@ -271,7 +280,7 @@ def format_func2(value):
     return options[value - 1]  
 
 vie_sociale = st.select_slider(
-    "Qeul impact votre trouble moteur a-t-il sur votre vie sociale?",
+    "Quel impact votre trouble moteur a-t-il sur votre vie sociale ?",
     options=[1, 2, 3, 4, 5],
     value=1,
     format_func=format_func2
