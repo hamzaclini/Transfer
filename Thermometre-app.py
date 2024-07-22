@@ -210,7 +210,7 @@ def user_input_features():
 
 document = user_input_features()
 
-#if st.button('Enregisterez'):
+#if st.button('Enregistrer'):
 #    write_data(document)
 #save_and_download_csv(df)
 #st.write(document)
