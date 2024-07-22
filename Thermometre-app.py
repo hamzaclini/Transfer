@@ -1,9 +1,10 @@
 import streamlit as st
 import pandas as pd
 import base64
-import datetime
+from datetime import datetime, timedelta, date
 import pymongo
 import hmac
+from streamlit_date_picker import date_range_picker, date_picker, PickerType
 #from bson import ObjectId
 
 def check_password():
@@ -255,9 +256,8 @@ st.header("Qualité de Vie")
 
 def format_func(value):
     options = ["Très bonne", "Bonne", "Moyenne", "Mauvaise", "Très Mauvaise"]
-    return options[value - 1]  # Subtract 1 to match the zero-based index
+    return options[value - 1]  
 
-# Create the slider
 vie_general = st.select_slider(
     "Comment évaluez-vous votre qualité de vie générale",
     options=[5, 4, 3, 2, 1],
@@ -267,10 +267,9 @@ vie_general = st.select_slider(
 
 
 def format_func2(value):
-    options = ["Aucane impact", "Impact mineur", "Impact modéré", "Impact important", "Impact très important"]
-    return options[value - 1]  # Subtract 1 to match the zero-based index
+    options = ["Aucun impact", "Impact mineur", "Impact modéré", "Impact important", "Impact très important"]
+    return options[value - 1]  
 
-# Create the slider
 vie_sociale = st.select_slider(
     "Qeul impact votre trouble moteur a-t-il sur votre vie sociale?",
     options=[1, 2, 3, 4, 5],
@@ -389,7 +388,7 @@ st.markdown(
 
 
 st.write("""
-# Thermometre Questionnaire
+# Questionnaire Planche de Transfert
 """)
 
 
@@ -437,7 +436,6 @@ def stringify(i:int = 0) -> str:
 #         return None
 
 def write_data(new_data):
-    # Write new data to the database
     db = client.Questionnaire
     db.Transfer.insert_one(new_data)
     
@@ -447,13 +445,17 @@ def user_input_features():
         #current_date = datetime.date.today()
         surname = st.sidebar.text_input("Nom")
         name = st.sidebar.text_input("Prénom")
-        date = st.sidebar.date_input("Date de naissance", datetime.date(2010, 1, 1))
+        #date = st.sidebar.date_input("Date de naissance", datetime.date(2010, 1, 1))
+        default_value = datetime.now()
+        with st.sidebar.container():
+            st.write("Date de Naissance")
+            birthDate = date_picker(picker_type=PickerType.date, value=default_value, key='date_picker')
         #age = current_date.year - date.year - ((current_date.month, current_date.day) < (date.month, date.day))
-        sex = st.sidebar.selectbox('Sex',('Homme','Femme'))
+        sex = st.sidebar.selectbox('Genre',('Homme','Femme'))
         #study = st.sidebar.selectbox("Niveau d'etude",('CAP/BEP','Baccalauréat professionnel','Baccalauréat général', 'Bac +2 (DUT/BTS)', 'Bac +3 (Licence)',
         #                                               'Bac +5 (Master)', 'Bac +7 (Doctorat, écoles supérieurs)'))
         #questionnaire = st.sidebar.selectbox('Questionnaire',('TRAQ','FAST','TRAQ+FAST'))
-        st.write("""## Cet enfant se distingue des autres enfants de son âge de la manière suivante:""")
+        st.write("""## A propos de votre perception de la planche de transfert...""")
         for i, question in enumerate(Comp, start=1):
             slider_output = st.select_slider(
             f"{question}",
@@ -466,7 +468,8 @@ def user_input_features():
 
         user_data = {"lastName": surname,
                      'firstName': name,
-                     'birthDate': date.isoformat(),
+                     #'birthDate': birthDate.isoformat(),
+                     'birthDate': birthDate,
                      'sex': sex}
         answers_data = answers
 
