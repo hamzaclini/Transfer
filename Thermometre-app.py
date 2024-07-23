@@ -200,7 +200,80 @@ situation_data = {
     }
 }
 
-# 
+###
+st.header("Aménagement du Lieu de Vie")
+
+st.subheader("Cuisine :")
+
+st.subheader("Votre cuisine est-elle aménagée pour être accessible en fauteuil roulant ?")
+cuisine_roulant = st.radio(
+    "",
+    ('Oui', 'Non'),
+    index=None,
+    key="roulant"
+)
+
+
+st.subheader("Quels aménagements spécifiques avez-vous dans votre cuisine pour faciliter l'accès et l'utilisation ?")
+cuisine_plans = st.checkbox("Plans de travail abaissés")
+cusine_placards = st.checkbox("Placards accessibles")
+cuisine_adapte = st.checkbox("Évier adapté")
+autre_cuisine = st.checkbox("Autre (préciser) :",key="autre_cuisine")
+autre_cuisine_text = st.text_input("Préciser si autre :", key="autre_cuisine_text")
+
+st.subheader("Salle de Bain :")
+
+st.subheader("Disposez-vous d'une douche accessible, telle qu'une douche à l'italienne ?")
+bain_italienne = st.radio(
+    "",
+    ('Oui', 'Non'),
+    index=None,
+    key="italienne"
+)
+
+
+st.subheader("Avez-vous des équipements spéciaux installés dans votre salle de bain pour faciliter votre autonomie ?")
+bain_banc = st.checkbox("Banc de douche")
+bain_barres = st.checkbox("Barres d'appui")
+bain_douche = st.checkbox("Douche à l'italienne")
+autre_bain = st.checkbox("Autre (préciser) :",key="autre_bain")
+autre_bain_text = st.text_input("Préciser si autre :", key="autre_bain_text")
+
+st.subheader("Y a-t-il des obstacles spécifiques dans votre lieu de vie qui rendent l'utilisation de la planche de transfert difficile ?")
+obstacles = st.radio(
+    "",
+    ('Oui', 'Non'),
+    index=None,
+    key="obstacles"
+)
+obstacles_text = None
+if obstacles == 'Oui':
+    obstacles_text = st.text_input("Veuillez préciser", key="obstacles_text")
+
+
+
+amenagement_data = {
+    "cuisine roulant": cuisine_roulant,
+    "amenagement cuisine":{
+        "plans": cuisine_plans,
+        "placards": cusine_placards,
+        "adapte": cuisine_adapte,
+        "autre": autre_cuisine,
+        "autre_text": autre_cuisine_text
+    },
+    "bain italienne": bain_italienne,
+    "amenagement bain": {
+        "bain banc": bain_banc,
+        "bain barres": bain_barres,
+        "bain douche": bain_douche,
+        "autre bain": autre_bain,
+        "autre bain text": autre_bain_text
+    },
+    "obstacles": obstacles,
+    "obstacles text": obstacles_text
+}
+
+### 
 
 st.header("Vie quotidienne et autonomie")
 
@@ -297,45 +370,10 @@ qualite_data = {
 
 
 
-# Submission
-#if st.button("Soumettre"):
-#    if temps_trouble is None or nature_trouble is None or douleurs is None or aides_techniques is None:
-#        st.error("Veuillez répondre à toutes les questions.")
-#    else:
-#        st.success("Merci pour vos réponses.")
-#        # Process the responses
-#        responses = {
-#            "paralysie": paralysie,
-#            "sclerose": sclerose,
-#            "dystrophie": dystrophie,
-#            "amputation": amputation,
-#            "atrophie": atrophie,
-#            "autre": autre,
-#            "autre_text": autre_text,
-#            "temps_trouble": temps_trouble,
-#            "nature_trouble": nature_trouble,
-#            "douleurs": douleurs,
-#            "aides_techniques": aides_techniques
-#        }
-#        st.write(responses)
-#        # Here you can add code to save the responses
 
 
 
-###
 
-#Comp = [
-#    "Organisation du matériel (ex. matériel rangé sur la table)",
-#    "Concentration sur tâches exigeantes (ex. reste sur une activité sans se distraire)",
-#    "Application des instructions (ex. suit une directive sans rappel)",
-#    "Réactivité modérée aux distractions externes (ex. ignore les bruits alentours lors d'une tâche)",
-#    "Fluidité dans les transitions (ex. change d'activité sans délai)",
-#    "Capacité à rester calme (ex. reste assis pendant une histoire)",
-#    "Gestion des mouvements et manipulations (ex. ne met pas d'objets à la bouche)",
-#    "Régulation des prises de parole (ex. parle à des moments appropriés)",
-#    "Adaptation sociale et émotionnelle (ex. joue sans exclure les autres)",
-#    "Engagement dans les jeux collectifs (ex. suit les règles du jeu)"
-#    ]
 
 Comp = [
      "L'utilisation de la planche permet d'améliorer ma mobilité.",
@@ -486,6 +524,7 @@ def user_input_features():
         #"_id": ObjectId(),  # Generate a new ObjectId
         "questionaire": "Planche de Transfer",
         "situation": {},
+        "amenagement": {},
         "vie": {},
         "qualite": {},
         "user": user_data,
@@ -499,6 +538,7 @@ def user_input_features():
 
 document = user_input_features()
 document["situation"] = situation_data
+document["amenagement"] = amenagement_data
 document["vie"] = vie_data
 document["qualite"] = qualite_data
 
