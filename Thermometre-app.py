@@ -250,6 +250,9 @@ obstacles_text = None
 if obstacles == 'Oui':
     obstacles_text = st.text_input("Veuillez préciser", key="obstacles_text")
 
+st.subheader("Avez-vous des suggestions pour des améliorations de produits qui pourraient aider à surmonter ces obstacles ?")
+ameliorations = st.text_input("", key="améliorations")
+
 
 
 amenagement_data = {
@@ -270,7 +273,8 @@ amenagement_data = {
         "autre bain text": autre_bain_text
     },
     "obstacles": obstacles,
-    "obstacles text": obstacles_text
+    "obstacles text": obstacles_text,
+    "ameliorations": ameliorations
 }
 
 ### 
