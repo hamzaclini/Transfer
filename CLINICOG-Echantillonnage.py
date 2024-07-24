@@ -557,11 +557,13 @@ document["qualite"] = qualite_data
 #input_date = custom_date_input("Select a date")
 #if input_date:
 #    st.write("Selected date:", input_date)
-     
+
+if "disabled" not in st.session_state:
+    st.session_state.disabled = False
      
 left_co, cent_co,last_co = st.columns(3)
 with cent_co:
-    button = st.button('Enregistrer')
+    button = st.button('Enregistrer', disabled=st.session_state.disabled)
     st.image("clinicogImg.png", width=200)
     
 if button:
@@ -571,6 +573,7 @@ if button:
         st.session_state.disabled = True
         time.sleep(5)
         st.rerun()
+        
     else:
         st.write("## Pour enregistrer vos résultats, vous devez consentir à cette étude.")
      
