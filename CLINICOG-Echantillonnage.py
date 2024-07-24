@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, date
 import pymongo
 import hmac
 from streamlit_date_picker import date_range_picker, date_picker, PickerType
+import time
 #from bson import ObjectId
 
 st.set_page_config(page_title="CLINICOG Echantillonnage", page_icon="🧠")
@@ -566,9 +567,12 @@ with cent_co:
 if button:
     if all([participation == 'Oui', retrait == 'Oui', confidentialite == 'Oui', utilisation_donnees == 'Oui']):
         write_data(document)
-        st.write("Merci d'avoir participé(e) à ce questionnaire")
+        st.write("## Merci d'avoir participé(e) à ce questionnaire")
+        st.session_state.disabled = True
+        time.sleep(5)
+        st.rerun()
     else:
-        st.write("Pour enregistrer vos résultats, vous devez consentir à cette étude.")
+        st.write("## Pour enregistrer vos résultats, vous devez consentir à cette étude.")
      
 
 
