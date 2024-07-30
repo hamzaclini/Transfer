@@ -6,6 +6,7 @@ import pymongo
 import hmac
 from streamlit_date_picker import date_range_picker, date_picker, PickerType
 import time
+import requests
 #from bson import ObjectId
 
 st.set_page_config(page_title="CLINICOG Echantillonnage", page_icon="🧠")
@@ -71,8 +72,19 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+def get_ip():
+    try:
+        response = requests.get('https://api.ipify.org?format=json')
+        ip = response.json()['ip']
+        return ip
+    except Exception as e:
+        st.error(f"Error getting IP address: {e}")
+        return None
+
 ###
 # Consentement
+
+st.markdown("### Veuillez remplir les questions suivantes cliquer sur enregistrer à la fin. Les questions marquées d'un (*) sont obligatoires.")
 
 st.subheader("Je reconnais que :")
 
@@ -100,6 +112,359 @@ utilisation_donnees = st.radio(
         index=None
     )
 
+ip_collection = st.radio(
+        "Je consens à la collecte de mon adresse IP *",
+        ('Oui', 'Non'),
+        index=None
+    )
+
+###
+
+st.header("Vie quotidienne et autonomie")
+
+# Niveau d'autonomie
+st.subheader("Niveau d'autonomie dans les activités quotidiennes (manger, s'habiller, se laver, etc.) :")
+autonomie = st.radio(
+    "",
+    ('Totalement autonome', 'Partiellement autonome (besoin d\'aide pour certaines activités)', 
+     'Dépendant (besoin d\'aide pour la plupart des activités)', 'Totalement dépendant'),
+    index=None
+)
+
+# Assistance pour déplacements
+st.subheader("Avez-vous besoin d'une assistance pour vos déplacements ?")
+assistance_deplacement = st.radio(
+    "",
+    ('Oui', 'Non'),
+    index=None,
+    key = "assitance"
+)
+
+# Si oui, quel type d'assistance ?
+if assistance_deplacement == 'Oui':
+    st.subheader("Si oui, quel type d'assistance ?")
+    assistance_humaine = st.checkbox("Assistance humaine (aidant familial, assistant personnel)")
+    aide_technique = st.checkbox("Aide technique (fauteuil roulant, déambulateur)")
+    autre_assistance = st.checkbox("Autre (préciser) :")
+    autre_assistance_text = st.text_input("Préciser si autre :")
+
+# Travail
+st.subheader("Travaillez-vous actuellement ?")
+travail = st.radio(
+    "",
+    ('Oui, à temps plein', 'Oui, à temps partiel', 'Non, mais je cherche du travail', 'Non, je ne cherche pas de travail'),
+    index=None,
+    key="travail"
+)
+
+# Collect:
+
+vie_data = {
+    "autonomie": autonomie,
+    "assistance_deplacement": assistance_deplacement,
+    "assistance_details": {
+        "assistance_humaine": assistance_humaine if assistance_deplacement == 'Oui' else None,
+        "aide_technique": aide_technique if assistance_deplacement == 'Oui' else None,
+        "autre_assistance": autre_assistance if assistance_deplacement == 'Oui' else None,
+        "autre_assistance_text": autre_assistance_text if assistance_deplacement == 'Oui' else None
+    },
+    "travail": travail
+}
+
+
+###
+st.header("Aménagement du Lieu de Vie")
+
+st.subheader("Cuisine :")
+
+st.subheader("Votre cuisine est-elle aménagée pour être accessible en fauteuil roulant ?")
+cuisine_roulant = st.radio(
+    "",
+    ('Oui', 'Non'),
+    index=None,
+    key="roulant"
+)
+
+
+st.subheader("Quels aménagements spécifiques avez-vous dans votre cuisine pour faciliter l'accès et l'utilisation ?")
+cuisine_plans = st.checkbox("Plans de travail abaissés")
+cusine_placards = st.checkbox("Placards accessibles")
+cuisine_adapte = st.checkbox("Évier adapté")
+autre_cuisine = st.checkbox("Autre (préciser) :",key="autre_cuisine")
+autre_cuisine_text = st.text_input("Préciser si autre :", key="autre_cuisine_text")
+
+st.subheader("Salle de Bain :")
+
+st.subheader("Disposez-vous d'une douche accessible, telle qu'une douche à l'italienne ?")
+bain_italienne = st.radio(
+    "",
+    ('Oui', 'Non'),
+    index=None,
+    key="italienne"
+)
+
+
+st.subheader("Avez-vous des équipements spéciaux installés dans votre salle de bain pour faciliter votre autonomie ?")
+bain_banc = st.checkbox("Banc de douche")
+bain_barres = st.checkbox("Barres d'appui")
+bain_douche = st.checkbox("Douche à l'italienne")
+autre_bain = st.checkbox("Autre (préciser) :",key="autre_bain")
+autre_bain_text = st.text_input("Préciser si autre :", key="autre_bain_text")
+
+st.subheader("Y a-t-il des obstacles spécifiques dans votre lieu de vie qui rendent l'utilisation de la planche de transfert difficile ?")
+obstacles = st.radio(
+    "",
+    ('Oui', 'Non'),
+    index=None,
+    key="obstacles"
+)
+obstacles_text = None
+if obstacles == 'Oui':
+    obstacles_text = st.text_input("Veuillez préciser", key="obstacles_text")
+
+st.subheader("Avez-vous des suggestions pour des améliorations de produits qui pourraient aider à surmonter ces obstacles ?")
+ameliorations = st.text_input("", key="améliorations")
+
+
+
+amenagement_data = {
+    "cuisine roulant": cuisine_roulant,
+    "amenagement cuisine":{
+        "plans": cuisine_plans,
+        "placards": cusine_placards,
+        "adapte": cuisine_adapte,
+        "autre": autre_cuisine,
+        "autre_text": autre_cuisine_text
+    },
+    "bain italienne": bain_italienne,
+    "amenagement bain": {
+        "bain banc": bain_banc,
+        "bain barres": bain_barres,
+        "bain douche": bain_douche,
+        "autre bain": autre_bain,
+        "autre bain text": autre_bain_text
+    },
+    "obstacles": obstacles,
+    "obstacles text": obstacles_text,
+    "ameliorations": ameliorations
+}
+
+### 
+
+
+
+###
+slider_values_vie = [1,2,3,4,5]
+#slider_strings = ["Très insuffisant", "Insuffisant", "Satisfaisant", "Très satisfaisant"]
+#slider_strings = ["Non", "Un peu", "Oui"]
+slider_strings = ["Pas du tout d'accord", "Plutôt pas d'accord", "Plutôt d'accord", "Assez d'accord", "Très d'accord", "Complètement d'accord"]
+
+
+
+st.header("Qualité de Vie")
+
+def format_func(value):
+    options = ["Très bonne", "Bonne", "Moyenne", "Mauvaise", "Très Mauvaise"]
+    return options[value - 1]  
+
+vie_general = st.select_slider(
+    "Comment évaluez-vous votre qualité de vie générale",
+    options=[5, 4, 3, 2, 1],
+    value=5,
+    format_func=format_func
+)
+
+
+def format_func2(value):
+    options = ["Aucun impact", "Impact mineur", "Impact modéré", "Impact important", "Impact très important"]
+    return options[value - 1]  
+
+vie_sociale = st.select_slider(
+    "Quel impact votre trouble moteur a-t-il sur votre vie sociale ?",
+    options=[1, 2, 3, 4, 5],
+    value=1,
+    format_func=format_func2
+)
+
+commentaires = st.text_input("Autre commentaires :")
+
+# Collect:
+qualite_data = {
+    "qualite_vie": vie_general,
+    "impact_vie_sociale": vie_sociale,
+    "commentaires": commentaires
+}
+
+
+
+
+
+
+
+
+Comp = [
+     "L'utilisation de la planche permet d'améliorer ma mobilité.",
+    "L'utilisation de la planche améliore mon indépendance dans les activités quotidiennes.",
+    "Je trouve que la planche s'adapte facilement à différents environnements et situations.",
+    "Je pense que l'utilisation de la planche réduit mon risque de blessures lors des transferts.",
+    "Je trouve globalement la planche encombrante et difficile à transporter.",
+    "J'ai peur de basculer ou de tomber quand j'utilise la planche.",
+    "L'utilisation de la planche est inconfortable.",
+    "J'utilise la planche uniquement parce que je n'ai pas d'autres options.",
+    "Je préfère utiliser d'autres méthodes que la planche pour les transferts (aide d'un aidant, support mural, etc.).",
+    "Le bois semble adapté en terme de poids.",
+    "Le bois semble adapté en terme de durabilité.",
+    "Le polycarbonate semble adapté en terme de poids.",
+    "Le polycarbonate semble adapté en terme de durabilité.",
+    "Les matériaux en résine semblent adaptés en terme de poids.",
+    "Les matériaux en résine semblent adaptés en terme de durabilité.",
+    "Les matériaux en composite semblent adaptés en terme de poids.",
+    "Les matériaux en composite semblent adaptés en terme de durabilité.",
+    "La planche offre actuellement un équilibre optimal pour prévenir le glissement non désiré.",
+    "Un antidérapant semble nécessaire pour améliorer la sécurité de la glisse.",
+    "Ma glisse est identique peu importe les vêtements que je porte.",
+    "Je peux réaliser la glisse en sécurité même en étant totalement dénudé.",
+    "Une forme courbe me semblerait adaptée en terme de fonctionnalité.",
+    "Une forme courbe me semblerait adaptée en terme de stabilité et de sécurité.",
+    "Une encoche sur la planche me semblerait adaptée en terme de fonctionnalité.",
+    "Une encoche sur la planche me semblerait adaptée en terme de stabilité et de sécurité.",
+    "Une accroche permettant de fixer la planche au fauteuil semble indispensable à une planche innovante.",
+    "Un système permettant à la planche de se plier semble indispensable à une planche innovante.",
+    "Un système permettant à la planche de se monter sur plusieurs supports semble indispensable à une planche innovante.",
+    "Une technologie intégrée à la planche pour prévenir les escarres serait une innovation notable pour les utilisateurs.",
+    "Une technologie intégrée à la planche pour réaliser sa pesée lors des transferts serait une innovation notable pour les utilisateurs.",
+    "Des capteurs intégrés à la planche pour surveiller la glisse lors des transferts représenteraient une innovation notable pour les utilisateurs."]
+
+
+
+
+
+st.markdown(
+        """<style>
+        .main {
+            background-color: #bbdcee;
+        }
+        div[class*="stSlider"] > label > div[data-testid="stMarkdownContainer"] > p {
+        font-size: 20px;
+                }
+        </style>
+                """, unsafe_allow_html=True)
+
+
+st.markdown(
+    """
+    <style>
+    .centered_button {
+        display: flex;
+        justify-content: center;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+st.write("""
+# Questionnaire Planche de Transfert
+""")
+
+
+#st.sidebar.header('Informations')
+
+#slider_values = [1,2,3,4]
+#slider_values = [1,2,3]
+slider_values = [1,2,3,4,5,6]
+#slider_strings = ["Très insuffisant", "Insuffisant", "Satisfaisant", "Très satisfaisant"]
+#slider_strings = ["Non", "Un peu", "Oui"]
+slider_strings = ["Pas du tout d'accord", "Plutôt pas d'accord", "Plutôt d'accord", "Assez d'accord", "Très d'accord", "Complètement d'accord"]
+
+def stringify(i:int = 0) -> str:
+    return slider_strings[i-1]
+
+#T1 = st.select_slider(
+#    "Je quitte souvent ma place sans nécessité lors d'une réunion.",
+#    options=slider_values,
+#    value=1,
+#    format_func=stringify)
+
+#def save_and_download_csv(df):
+#    csv_string = df.to_csv(index=False,sep=';')
+#    b64 = base64.b64encode(csv_string.encode()).decode()
+#    href = f'<a href="data:file/csv;base64,{b64}" download="features.csv">Download CSV File</a>'
+#    st.markdown(href, unsafe_allow_html=True)
+
+# def custom_date_input(label, min_date=None, max_date=None):
+#     if min_date is None:
+#         min_date = datetime.datetime(year=1900, month=1, day=1)
+#     if max_date is None:
+#         max_date = datetime.datetime(year=2100, month=12, day=31)
+#     year = st.number_input("Year", min_value=min_date.year, max_value=max_date.year, step=1, value=min_date.year)
+#     month = st.number_input("Month", min_value=1, max_value=12, step=1, value=min_date.month)
+#     day = st.number_input("Day", min_value=1, max_value=31, step=1, value=min_date.day)
+#     try:
+#         date_input = datetime.datetime(year=year, month=month, day=day)
+#         if min_date <= date_input <= max_date:
+#             return date_input
+#         else:
+#             st.error("Please enter a date within the specified range.")
+#             return None
+#     except ValueError:
+#         st.error("Please enter a valid date.")
+#         return None
+
+def write_data(new_data):
+    db = client.Questionnaire
+    db.Transfer.insert_one(new_data)
+    
+
+
+def user_input_features():
+        #current_date = datetime.date.today()
+        #surname = st.sidebar.text_input("Nom")
+        #name = st.sidebar.text_input("Prénom")
+        #date = st.sidebar.date_input("Date de naissance", datetime.date(2010, 1, 1))
+        #default_value = datetime.now()
+        #with st.sidebar.container():
+        #    st.write("Date de Naissance")
+        #    birthDate = date_picker(picker_type=PickerType.date, value=default_value, key='date_picker')
+        #age = current_date.year - date.year - ((current_date.month, current_date.day) < (date.month, date.day))
+        #sex = st.sidebar.selectbox('Genre',('Homme','Femme'))
+        #study = st.sidebar.selectbox("Niveau d'etude",('CAP/BEP','Baccalauréat professionnel','Baccalauréat général', 'Bac +2 (DUT/BTS)', 'Bac +3 (Licence)',
+        #                                               'Bac +5 (Master)', 'Bac +7 (Doctorat, écoles supérieurs)'))
+        #questionnaire = st.sidebar.selectbox('Questionnaire',('TRAQ','FAST','TRAQ+FAST'))
+        ip = get_ip()
+        st.write("""## A propos de votre perception de la planche de transfert...""")
+        for i, question in enumerate(Comp, start=1):
+            slider_output = st.select_slider(
+            f"{question}",
+            options=slider_values,
+            value=1,
+            format_func=stringify
+            )
+            answers[f"THERM{i}"] = slider_output
+
+
+        user_data = {"ip": ip,
+                     "date": datetime.now()}
+        answers_data = answers
+
+        document = {
+        #"_id": ObjectId(),  # Generate a new ObjectId
+        "questionaire": "Planche de Transfer",
+        "user": user_data,
+        "vie": {},
+        "amenagement": {},
+        "qualite": {},
+        "situation": {},
+        "answers": answers_data
+        #"__v": 0
+        }
+                
+        return document
+
+
+
+document = user_input_features()
 
 ###
 # situation de Handicap:
@@ -203,347 +568,6 @@ situation_data = {
     }
 }
 
-###
-st.header("Aménagement du Lieu de Vie")
-
-st.subheader("Cuisine :")
-
-st.subheader("Votre cuisine est-elle aménagée pour être accessible en fauteuil roulant ?")
-cuisine_roulant = st.radio(
-    "",
-    ('Oui', 'Non'),
-    index=None,
-    key="roulant"
-)
-
-
-st.subheader("Quels aménagements spécifiques avez-vous dans votre cuisine pour faciliter l'accès et l'utilisation ?")
-cuisine_plans = st.checkbox("Plans de travail abaissés")
-cusine_placards = st.checkbox("Placards accessibles")
-cuisine_adapte = st.checkbox("Évier adapté")
-autre_cuisine = st.checkbox("Autre (préciser) :",key="autre_cuisine")
-autre_cuisine_text = st.text_input("Préciser si autre :", key="autre_cuisine_text")
-
-st.subheader("Salle de Bain :")
-
-st.subheader("Disposez-vous d'une douche accessible, telle qu'une douche à l'italienne ?")
-bain_italienne = st.radio(
-    "",
-    ('Oui', 'Non'),
-    index=None,
-    key="italienne"
-)
-
-
-st.subheader("Avez-vous des équipements spéciaux installés dans votre salle de bain pour faciliter votre autonomie ?")
-bain_banc = st.checkbox("Banc de douche")
-bain_barres = st.checkbox("Barres d'appui")
-bain_douche = st.checkbox("Douche à l'italienne")
-autre_bain = st.checkbox("Autre (préciser) :",key="autre_bain")
-autre_bain_text = st.text_input("Préciser si autre :", key="autre_bain_text")
-
-st.subheader("Y a-t-il des obstacles spécifiques dans votre lieu de vie qui rendent l'utilisation de la planche de transfert difficile ?")
-obstacles = st.radio(
-    "",
-    ('Oui', 'Non'),
-    index=None,
-    key="obstacles"
-)
-obstacles_text = None
-if obstacles == 'Oui':
-    obstacles_text = st.text_input("Veuillez préciser", key="obstacles_text")
-
-st.subheader("Avez-vous des suggestions pour des améliorations de produits qui pourraient aider à surmonter ces obstacles ?")
-ameliorations = st.text_input("", key="améliorations")
-
-
-
-amenagement_data = {
-    "cuisine roulant": cuisine_roulant,
-    "amenagement cuisine":{
-        "plans": cuisine_plans,
-        "placards": cusine_placards,
-        "adapte": cuisine_adapte,
-        "autre": autre_cuisine,
-        "autre_text": autre_cuisine_text
-    },
-    "bain italienne": bain_italienne,
-    "amenagement bain": {
-        "bain banc": bain_banc,
-        "bain barres": bain_barres,
-        "bain douche": bain_douche,
-        "autre bain": autre_bain,
-        "autre bain text": autre_bain_text
-    },
-    "obstacles": obstacles,
-    "obstacles text": obstacles_text,
-    "ameliorations": ameliorations
-}
-
-### 
-
-st.header("Vie quotidienne et autonomie")
-
-# Niveau d'autonomie
-st.subheader("Niveau d'autonomie dans les activités quotidiennes (manger, s'habiller, se laver, etc.) :")
-autonomie = st.radio(
-    "",
-    ('Totalement autonome', 'Partiellement autonome (besoin d\'aide pour certaines activités)', 
-     'Dépendant (besoin d\'aide pour la plupart des activités)', 'Totalement dépendant'),
-    index=None
-)
-
-# Assistance pour déplacements
-st.subheader("Avez-vous besoin d'une assistance pour vos déplacements ?")
-assistance_deplacement = st.radio(
-    "",
-    ('Oui', 'Non'),
-    index=None,
-    key = "assitance"
-)
-
-# Si oui, quel type d'assistance ?
-if assistance_deplacement == 'Oui':
-    st.subheader("Si oui, quel type d'assistance ?")
-    assistance_humaine = st.checkbox("Assistance humaine (aidant familial, assistant personnel)")
-    aide_technique = st.checkbox("Aide technique (fauteuil roulant, déambulateur)")
-    autre_assistance = st.checkbox("Autre (préciser) :")
-    autre_assistance_text = st.text_input("Préciser si autre :")
-
-# Travail
-st.subheader("Travaillez-vous actuellement ?")
-travail = st.radio(
-    "",
-    ('Oui, à temps plein', 'Oui, à temps partiel', 'Non, mais je cherche du travail', 'Non, je ne cherche pas de travail'),
-    index=None,
-    key="travail"
-)
-
-# Collect:
-
-vie_data = {
-    "autonomie": autonomie,
-    "assistance_deplacement": assistance_deplacement,
-    "assistance_details": {
-        "assistance_humaine": assistance_humaine if assistance_deplacement == 'Oui' else None,
-        "aide_technique": aide_technique if assistance_deplacement == 'Oui' else None,
-        "autre_assistance": autre_assistance if assistance_deplacement == 'Oui' else None,
-        "autre_assistance_text": autre_assistance_text if assistance_deplacement == 'Oui' else None
-    },
-    "travail": travail
-}
-
-###
-slider_values_vie = [1,2,3,4,5]
-#slider_strings = ["Très insuffisant", "Insuffisant", "Satisfaisant", "Très satisfaisant"]
-#slider_strings = ["Non", "Un peu", "Oui"]
-slider_strings = ["Pas du tout d'accord", "Plutôt pas d'accord", "Plutôt d'accord", "Assez d'accord", "Très d'accord", "Complètement d'accord"]
-
-
-
-st.header("Qualité de Vie")
-
-def format_func(value):
-    options = ["Très bonne", "Bonne", "Moyenne", "Mauvaise", "Très Mauvaise"]
-    return options[value - 1]  
-
-vie_general = st.select_slider(
-    "Comment évaluez-vous votre qualité de vie générale",
-    options=[5, 4, 3, 2, 1],
-    value=5,
-    format_func=format_func
-)
-
-
-def format_func2(value):
-    options = ["Aucun impact", "Impact mineur", "Impact modéré", "Impact important", "Impact très important"]
-    return options[value - 1]  
-
-vie_sociale = st.select_slider(
-    "Quel impact votre trouble moteur a-t-il sur votre vie sociale ?",
-    options=[1, 2, 3, 4, 5],
-    value=1,
-    format_func=format_func2
-)
-
-commentaires = st.text_input("Autre commentaires :")
-
-# Collect:
-qualite_data = {
-    "qualite_vie": vie_general,
-    "impact_vie_sociale": vie_sociale,
-    "commentaires": commentaires
-}
-
-
-
-
-
-
-
-
-Comp = [
-     "L'utilisation de la planche permet d'améliorer ma mobilité.",
-    "L'utilisation de la planche améliore mon indépendance dans les activités quotidiennes.",
-    "Je trouve que la planche s'adapte facilement à différents environnements et situations.",
-    "Je pense que l'utilisation de la planche réduit mon risque de blessures lors des transferts.",
-    "Je trouve globalement la planche encombrante et difficile à transporter.",
-    "J'ai peur de basculer ou de tomber quand j'utilise la planche.",
-    "L'utilisation de la planche est inconfortable.",
-    "J'utilise la planche uniquement parce que je n'ai pas d'autres options.",
-    "Je préfère utiliser d'autres méthodes que la planche pour les transferts (aide d'un aidant, support mural, etc.).",
-    "Le bois semble adapté en terme de poids.",
-    "Le bois semble adapté en terme de durabilité.",
-    "Le polycarbonate semble adapté en terme de poids.",
-    "Le polycarbonate semble adapté en terme de durabilité.",
-    "Les matériaux en résine semblent adaptés en terme de poids.",
-    "Les matériaux en résine semblent adaptés en terme de durabilité.",
-    "Les matériaux en composite semblent adaptés en terme de poids.",
-    "Les matériaux en composite semblent adaptés en terme de durabilité.",
-    "La planche offre actuellement un équilibre optimal pour prévenir le glissement non désiré.",
-    "Un antidérapant semble nécessaire pour améliorer la sécurité de la glisse.",
-    "Ma glisse est identique peu importe les vêtements que je porte.",
-    "Je peux réaliser la glisse en sécurité même en étant totalement dénudé.",
-    "Une forme courbe me semblerait adaptée en terme de fonctionnalité.",
-    "Une forme courbe me semblerait adaptée en terme de stabilité et de sécurité.",
-    "Une encoche sur la planche me semblerait adaptée en terme de fonctionnalité.",
-    "Une encoche sur la planche me semblerait adaptée en terme de stabilité et de sécurité.",
-    "Une accroche permettant de fixer la planche au fauteuil semble indispensable à une planche innovante.",
-    "Un système permettant à la planche de se plier semble indispensable à une planche innovante.",
-    "Un système permettant à la planche de se monter sur plusieurs supports semble indispensable à une planche innovante.",
-    "Une technologie intégrée à la planche pour prévenir les escarres serait une innovation notable pour les utilisateurs.",
-    "Une technologie intégrée à la planche pour réaliser sa pesée lors des transferts serait une innovation notable pour les utilisateurs.",
-    "Des capteurs intégrés à la planche pour surveiller la glisse lors des transferts représenteraient une innovation notable pour les utilisateurs."]
-
-
-
-
-
-st.markdown(
-        """<style>
-        div[class*="stSlider"] > label > div[data-testid="stMarkdownContainer"] > p {
-        font-size: 20px;
-                }
-        </style>
-                """, unsafe_allow_html=True)
-
-
-st.markdown(
-    """
-    <style>
-    .centered_button {
-        display: flex;
-        justify-content: center;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-st.write("""
-# Questionnaire Planche de Transfert
-""")
-
-
-st.sidebar.header('Informations')
-
-#slider_values = [1,2,3,4]
-#slider_values = [1,2,3]
-slider_values = [1,2,3,4,5,6]
-#slider_strings = ["Très insuffisant", "Insuffisant", "Satisfaisant", "Très satisfaisant"]
-#slider_strings = ["Non", "Un peu", "Oui"]
-slider_strings = ["Pas du tout d'accord", "Plutôt pas d'accord", "Plutôt d'accord", "Assez d'accord", "Très d'accord", "Complètement d'accord"]
-
-def stringify(i:int = 0) -> str:
-    return slider_strings[i-1]
-
-#T1 = st.select_slider(
-#    "Je quitte souvent ma place sans nécessité lors d'une réunion.",
-#    options=slider_values,
-#    value=1,
-#    format_func=stringify)
-
-#def save_and_download_csv(df):
-#    csv_string = df.to_csv(index=False,sep=';')
-#    b64 = base64.b64encode(csv_string.encode()).decode()
-#    href = f'<a href="data:file/csv;base64,{b64}" download="features.csv">Download CSV File</a>'
-#    st.markdown(href, unsafe_allow_html=True)
-
-# def custom_date_input(label, min_date=None, max_date=None):
-#     if min_date is None:
-#         min_date = datetime.datetime(year=1900, month=1, day=1)
-#     if max_date is None:
-#         max_date = datetime.datetime(year=2100, month=12, day=31)
-#     year = st.number_input("Year", min_value=min_date.year, max_value=max_date.year, step=1, value=min_date.year)
-#     month = st.number_input("Month", min_value=1, max_value=12, step=1, value=min_date.month)
-#     day = st.number_input("Day", min_value=1, max_value=31, step=1, value=min_date.day)
-#     try:
-#         date_input = datetime.datetime(year=year, month=month, day=day)
-#         if min_date <= date_input <= max_date:
-#             return date_input
-#         else:
-#             st.error("Please enter a date within the specified range.")
-#             return None
-#     except ValueError:
-#         st.error("Please enter a valid date.")
-#         return None
-
-def write_data(new_data):
-    db = client.Questionnaire
-    db.Transfer.insert_one(new_data)
-    
-
-
-def user_input_features():
-        #current_date = datetime.date.today()
-        surname = st.sidebar.text_input("Nom")
-        name = st.sidebar.text_input("Prénom")
-        #date = st.sidebar.date_input("Date de naissance", datetime.date(2010, 1, 1))
-        default_value = datetime.now()
-        with st.sidebar.container():
-            st.write("Date de Naissance")
-            birthDate = date_picker(picker_type=PickerType.date, value=default_value, key='date_picker')
-        #age = current_date.year - date.year - ((current_date.month, current_date.day) < (date.month, date.day))
-        sex = st.sidebar.selectbox('Genre',('Homme','Femme'))
-        #study = st.sidebar.selectbox("Niveau d'etude",('CAP/BEP','Baccalauréat professionnel','Baccalauréat général', 'Bac +2 (DUT/BTS)', 'Bac +3 (Licence)',
-        #                                               'Bac +5 (Master)', 'Bac +7 (Doctorat, écoles supérieurs)'))
-        #questionnaire = st.sidebar.selectbox('Questionnaire',('TRAQ','FAST','TRAQ+FAST'))
-        st.write("""## A propos de votre perception de la planche de transfert...""")
-        for i, question in enumerate(Comp, start=1):
-            slider_output = st.select_slider(
-            f"{question}",
-            options=slider_values,
-            value=1,
-            format_func=stringify
-            )
-            answers[f"THERM{i}"] = slider_output
-
-
-        user_data = {"lastName": surname,
-                     'firstName': name,
-                     #'birthDate': birthDate.isoformat(),
-                     'birthDate': birthDate,
-                     'sex': sex}
-        answers_data = answers
-
-        document = {
-        #"_id": ObjectId(),  # Generate a new ObjectId
-        "questionaire": "Planche de Transfer",
-        "situation": {},
-        "amenagement": {},
-        "vie": {},
-        "qualite": {},
-        "user": user_data,
-        "answers": answers_data
-        #"__v": 0
-        }
-                
-        return document
-
-
-
-document = user_input_features()
 document["situation"] = situation_data
 document["amenagement"] = amenagement_data
 document["vie"] = vie_data
@@ -560,22 +584,36 @@ document["qualite"] = qualite_data
 
 if "disabled" not in st.session_state:
     st.session_state.disabled = False
-     
+
 left_co, cent_co,last_co = st.columns(3)
+
 with cent_co:
     button = st.button('Enregistrer', disabled=st.session_state.disabled)
+
+     
+left_co, cent_co,last_co = st.columns(3)
+with left_co:
+    st.image("logo.png", width=200)
+
+with last_co:
+    st.image("Logo_GrHandiOse2.png", width=150)
+
+
+with cent_co:
     st.image("clinicogImg.png", width=200)
+
+
     
 if button:
-    if all([participation == 'Oui', retrait == 'Oui', confidentialite == 'Oui', utilisation_donnees == 'Oui']):
+    if all([participation == 'Oui', retrait == 'Oui', confidentialite == 'Oui', utilisation_donnees == 'Oui', ip_collection == 'Oui']):
         write_data(document)
-        st.write("## Merci d'avoir participé(e) à ce questionnaire")
+        st.write("### Merci d'avoir participé(e) à ce questionnaire. Ce questionnaire a été réalisé en collaboration avec Innov'Autonomie et GRHANDIOSE.")
         st.session_state.disabled = True
         time.sleep(5)
         st.rerun()
         
     else:
-        st.write("## Pour enregistrer vos résultats, vous devez consentir à cette étude.")
+        st.write("### Pour enregistrer vos résultats, vous devez consentir à cette étude.")
      
 
 
