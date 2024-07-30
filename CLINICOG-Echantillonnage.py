@@ -84,7 +84,7 @@ def get_ip():
 ###
 # Consentement
 
-st.markdown("### Veuillez remplir les questions suivantes cliquer sur enregistrer à la fin. Les questions marquées d'un (*) sont obligatoires.")
+st.markdown("### Merci de remplir les questions suivantes, et de cliquer sur 'Enregistrer' à la fin du questionnaire. Seules les questions marquées d'un (*) sont obligatoires.")
 
 st.subheader("Je reconnais que :")
 
