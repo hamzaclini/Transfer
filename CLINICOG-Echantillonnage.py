@@ -72,21 +72,33 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown(
-        """<style>
-        .main {
-            background-color: #bbdcee;
-        }
-        div[class*="stSlider"] > label > div[data-testid="stMarkdownContainer"] > p {
-        font-size: 20px;
-                }
-        /* Override Streamlit's default styles for both modes */
-        [data-testid="stAppViewContainer"], .css-1v5fq88, .css-10trblm {
-        background-color: #bbdcee; /* Same background color for both modes */
-        color: #000000; /* Your desired font color */
-        }
-        </style>
-                """, unsafe_allow_html=True)
+
+
+#st.markdown(
+#        """<style>
+#        .main {
+#            background-color: #bbdcee;
+#        }
+#        div[class*="stSlider"] > label > div[data-testid="stMarkdownContainer"] > p {
+#        font-size: 20px;
+#        color: #000000;
+#                }
+#        /* Override Streamlit's default styles for both modes */
+#        /* Override Streamlit's default styles for both modes */
+#    [data-testid="stAppViewContainer"], 
+#    .css-1v5fq88, 
+#    .css-10trblm, 
+#    .css-1cpxqw2, 
+#    .css-qbe2hs {
+#        background-color: #bbdcee; /* Same background color for both modes */
+#        color: #000000; /* Your desired font color */
+#    }
+#    /* Additional general text styling */
+#    body, .css-1cpxqw2 *, .css-qbe2hs * {
+#        color: #000000; /* Ensure general text color is black */
+#    }
+#        </style>
+#                """, unsafe_allow_html=True)
 
 
 st.markdown(
