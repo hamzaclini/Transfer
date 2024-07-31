@@ -72,6 +72,35 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.markdown(
+        """<style>
+        .main {
+            background-color: #bbdcee;
+        }
+        div[class*="stSlider"] > label > div[data-testid="stMarkdownContainer"] > p {
+        font-size: 20px;
+                }
+        /* Override Streamlit's default styles for both modes */
+        [data-testid="stAppViewContainer"], .css-1v5fq88, .css-10trblm {
+        background-color: #bbdcee; /* Same background color for both modes */
+        color: #000000; /* Your desired font color */
+        }
+        </style>
+                """, unsafe_allow_html=True)
+
+
+st.markdown(
+    """
+    <style>
+    .centered_button {
+        display: flex;
+        justify-content: center;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 def get_ip():
     try:
         response = requests.get('https://api.ipify.org?format=json')
@@ -339,29 +368,7 @@ Comp = [
 
 
 
-st.markdown(
-        """<style>
-        .main {
-            background-color: #bbdcee;
-        }
-        div[class*="stSlider"] > label > div[data-testid="stMarkdownContainer"] > p {
-        font-size: 20px;
-                }
-        </style>
-                """, unsafe_allow_html=True)
 
-
-st.markdown(
-    """
-    <style>
-    .centered_button {
-        display: flex;
-        justify-content: center;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 
 st.write("""
