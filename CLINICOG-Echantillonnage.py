@@ -615,7 +615,7 @@ with left_co:
     st.image("logo.png", width=200)
 
 with last_co:
-    st.image("Logo_GrHandiOse2.png", width=150)
+    st.image("Logo_GrHandiOse.png", width=150)
 
 
 with cent_co:
