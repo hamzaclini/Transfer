@@ -129,14 +129,16 @@ st.markdown("### Merci de remplir les questions suivantes, et de cliquer sur 'En
 
 st.subheader("Je suis :*")
 sex = st.radio(
-        "",
+        "Sexe",
         ('Un homme', 'Une femme'),
-        index=None
+        index=None,
+        label_visibility="hidden"
     )
 
 st.subheader("Mon âge :*")
 age = st.number_input(
-    "",
+    "Age",
+    label_visibility="hidden",
     min_value=0,  # Placeholder value
     max_value=99,
     value=0,  # Start with -1 as a "None" equivalent
@@ -182,19 +184,21 @@ st.header("Vie quotidienne et autonomie")
 # Niveau d'autonomie
 st.subheader("Niveau d'autonomie dans les activités quotidiennes (manger, s'habiller, se laver, etc.) : *")
 autonomie = st.radio(
-    "",
+    "autonomie",
     ('Totalement autonome', 'Partiellement autonome (besoin d\'aide pour certaines activités)', 
      'Dépendant (besoin d\'aide pour la plupart des activités)', 'Totalement dépendant'),
-    index=None
+    index=None,
+    label_visibility="hidden"
 )
 
 # Assistance pour déplacements
 st.subheader("Avez-vous besoin d'une assistance pour vos déplacements ?*")
 assistance_deplacement = st.radio(
-    "",
+    "assistance",
     ('Oui', 'Non'),
     index=None,
-    key = "assitance"
+    key = "assitance",
+    label_visibility="hidden"
 )
 
 # Si oui, quel type d'assistance ?
@@ -208,10 +212,11 @@ if assistance_deplacement == 'Oui':
 # Travail
 st.subheader("Travaillez-vous actuellement ?*")
 travail = st.radio(
-    "",
+    "travail",
     ('Oui, à temps plein', 'Oui, à temps partiel', 'Non, mais je cherche du travail', 'Non, je ne cherche pas de travail'),
     index=None,
-    key="travail"
+    key="travail",
+    label_visibility="hidden"
 )
 
 # Collect:
@@ -236,10 +241,11 @@ st.subheader("Cuisine :")
 
 st.subheader("Votre cuisine est-elle aménagée pour être accessible en fauteuil roulant ?*")
 cuisine_roulant = st.radio(
-    "",
+    "cuisine",
     ('Oui', 'Non'),
     index=None,
-    key="roulant"
+    key="roulant",
+    label_visibility="hidden"
 )
 
 
@@ -254,10 +260,11 @@ st.subheader("Salle de Bain :")
 
 st.subheader("Disposez-vous d'une douche accessible, telle qu'une douche à l'italienne ?*")
 bain_italienne = st.radio(
-    "",
+    "bain",
     ('Oui', 'Non'),
     index=None,
-    key="italienne"
+    key="italienne",
+    label_visibility="hidden"
 )
 
 
@@ -270,17 +277,18 @@ autre_bain_text = st.text_input("Préciser si autre :", key="autre_bain_text")
 
 st.subheader("Y a-t-il des obstacles spécifiques dans votre lieu de vie qui rendent l'utilisation de la planche de transfert difficile ?*")
 obstacles = st.radio(
-    "",
+    "obstacles",
     ('Oui', 'Non'),
     index=None,
-    key="obstacles"
+    key="obstacles",
+    label_visibility="hidden"
 )
 obstacles_text = None
 if obstacles == 'Oui':
     obstacles_text = st.text_input("Veuillez préciser", key="obstacles_text")
 
 st.subheader("Avez-vous des suggestions pour des améliorations de produits qui pourraient aider à surmonter ces obstacles ?")
-ameliorations = st.text_input("", key="améliorations")
+ameliorations = st.text_input("suggest", key="améliorations",label_visibility="hidden")
 
 
 
@@ -321,13 +329,13 @@ slider_strings = ["Pas du tout d'accord", "Plutôt pas d'accord", "Plutôt d'acc
 st.header("Qualité de Vie")
 
 def format_func(value):
-    options = ["Très bonne", "Bonne", "Moyenne", "Mauvaise", "Très Mauvaise"]
+    options = ["Très Mauvaise", "Mauvaise", "Moyenne", "Bonne", "Très bonne"]
     return options[value - 1]  
 
 vie_general = st.select_slider(
     "Comment évaluez-vous votre qualité de vie générale*",
-    options=[5, 4, 3, 2, 1],
-    value=5,
+    options=[1, 2, 3, 4, 5],
+    value=1,
     format_func=format_func
 )
 
@@ -532,35 +540,39 @@ membre_inferieur_droit = st.checkbox("Membre inférieur Droit")
 
 st.subheader("Depuis combien de temps avez-vous ce trouble moteur ? (en années)*")
 temps_trouble = st.number_input(
-    "",
+    "temps",
     min_value=0,
     max_value=None,
     value=0,
-    step=1
+    step=1,
+    label_visibility="hidden"
 )
 
 # Nature du trouble moteur
 st.subheader("Le trouble moteur est-il :*")
 nature_trouble = st.radio(
-    "",
+    "moteur",
     ('Congénital (depuis la naissance)', 'Acquis (après un accident, une maladie, etc.)'),
-    index=None
+    index=None,
+    label_visibility="hidden"
 )
 
 # Douleurs associées au trouble moteur
 st.subheader("Avez-vous des douleurs associées à votre trouble moteur ?*")
 douleurs = st.radio(
-    "",
+    "moteur2",
     ('Oui, constamment', 'Oui, fréquemment', 'Oui, de temps en temps', 'Non'),
-    index=None
+    index=None,
+    label_visibility="hidden"
 )
 
 # Aides techniques
 st.subheader("Utilisez-vous des aides techniques autres que la planche de transfert ? (ex. : fauteuil roulant, canne, déambulateur)*")
 aides_techniques = st.radio(
-    "",
+    "aide",
     ('Oui', 'Non'),
-    index=None
+    index=None,
+    label_visibility="hidden"
 )
 
 if aides_techniques == 'Oui':
