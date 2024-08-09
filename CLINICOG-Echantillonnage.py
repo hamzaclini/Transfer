@@ -127,6 +127,22 @@ def get_ip():
 
 st.markdown("### Merci de remplir les questions suivantes, et de cliquer sur 'Enregistrer' à la fin du questionnaire. Seules les questions marquées d'un (*) sont obligatoires.")
 
+st.subheader("Je suis :*")
+sex = st.radio(
+        "",
+        ('Un homme', 'Une femme'),
+        index=None
+    )
+
+st.subheader("Mon âge :*")
+age = st.number_input(
+    "",
+    min_value=0,  # Placeholder value
+    max_value=99,
+    value=0,  # Start with -1 as a "None" equivalent
+    step=1
+)
+
 st.subheader("Je reconnais que :")
 
 participation = st.radio(
@@ -164,7 +180,7 @@ ip_collection = st.radio(
 st.header("Vie quotidienne et autonomie")
 
 # Niveau d'autonomie
-st.subheader("Niveau d'autonomie dans les activités quotidiennes (manger, s'habiller, se laver, etc.) :")
+st.subheader("Niveau d'autonomie dans les activités quotidiennes (manger, s'habiller, se laver, etc.) : *")
 autonomie = st.radio(
     "",
     ('Totalement autonome', 'Partiellement autonome (besoin d\'aide pour certaines activités)', 
@@ -173,7 +189,7 @@ autonomie = st.radio(
 )
 
 # Assistance pour déplacements
-st.subheader("Avez-vous besoin d'une assistance pour vos déplacements ?")
+st.subheader("Avez-vous besoin d'une assistance pour vos déplacements ?*")
 assistance_deplacement = st.radio(
     "",
     ('Oui', 'Non'),
@@ -190,7 +206,7 @@ if assistance_deplacement == 'Oui':
     autre_assistance_text = st.text_input("Préciser si autre :")
 
 # Travail
-st.subheader("Travaillez-vous actuellement ?")
+st.subheader("Travaillez-vous actuellement ?*")
 travail = st.radio(
     "",
     ('Oui, à temps plein', 'Oui, à temps partiel', 'Non, mais je cherche du travail', 'Non, je ne cherche pas de travail'),
@@ -218,7 +234,7 @@ st.header("Aménagement du Lieu de Vie")
 
 st.subheader("Cuisine :")
 
-st.subheader("Votre cuisine est-elle aménagée pour être accessible en fauteuil roulant ?")
+st.subheader("Votre cuisine est-elle aménagée pour être accessible en fauteuil roulant ?*")
 cuisine_roulant = st.radio(
     "",
     ('Oui', 'Non'),
@@ -236,7 +252,7 @@ autre_cuisine_text = st.text_input("Préciser si autre :", key="autre_cuisine_te
 
 st.subheader("Salle de Bain :")
 
-st.subheader("Disposez-vous d'une douche accessible, telle qu'une douche à l'italienne ?")
+st.subheader("Disposez-vous d'une douche accessible, telle qu'une douche à l'italienne ?*")
 bain_italienne = st.radio(
     "",
     ('Oui', 'Non'),
@@ -252,7 +268,7 @@ bain_douche = st.checkbox("Douche à l'italienne")
 autre_bain = st.checkbox("Autre (préciser) :",key="autre_bain")
 autre_bain_text = st.text_input("Préciser si autre :", key="autre_bain_text")
 
-st.subheader("Y a-t-il des obstacles spécifiques dans votre lieu de vie qui rendent l'utilisation de la planche de transfert difficile ?")
+st.subheader("Y a-t-il des obstacles spécifiques dans votre lieu de vie qui rendent l'utilisation de la planche de transfert difficile ?*")
 obstacles = st.radio(
     "",
     ('Oui', 'Non'),
@@ -309,7 +325,7 @@ def format_func(value):
     return options[value - 1]  
 
 vie_general = st.select_slider(
-    "Comment évaluez-vous votre qualité de vie générale",
+    "Comment évaluez-vous votre qualité de vie générale*",
     options=[5, 4, 3, 2, 1],
     value=5,
     format_func=format_func
@@ -321,7 +337,7 @@ def format_func2(value):
     return options[value - 1]  
 
 vie_sociale = st.select_slider(
-    "Quel impact votre trouble moteur a-t-il sur votre vie sociale ?",
+    "Quel impact votre trouble moteur a-t-il sur votre vie sociale ?*",
     options=[1, 2, 3, 4, 5],
     value=1,
     format_func=format_func2
@@ -452,7 +468,7 @@ def user_input_features():
         #                                               'Bac +5 (Master)', 'Bac +7 (Doctorat, écoles supérieurs)'))
         #questionnaire = st.sidebar.selectbox('Questionnaire',('TRAQ','FAST','TRAQ+FAST'))
         ip = get_ip()
-        st.write("""## A propos de votre perception de la planche de transfert...""")
+        st.write("""## A propos de votre perception de la planche de transfert...*""")
         for i, question in enumerate(Comp, start=1):
             slider_output = st.select_slider(
             f"{question}",
@@ -512,7 +528,7 @@ membre_inferieur_droit = st.checkbox("Membre inférieur Droit")
 #    index=None
 #)
 
-st.subheader("Depuis combien de temps avez-vous ce trouble moteur ? (en années)")
+st.subheader("Depuis combien de temps avez-vous ce trouble moteur ? (en années)*")
 temps_trouble = st.number_input(
     "",
     min_value=0,
@@ -522,7 +538,7 @@ temps_trouble = st.number_input(
 )
 
 # Nature du trouble moteur
-st.subheader("Le trouble moteur est-il :")
+st.subheader("Le trouble moteur est-il :*")
 nature_trouble = st.radio(
     "",
     ('Congénital (depuis la naissance)', 'Acquis (après un accident, une maladie, etc.)'),
@@ -530,7 +546,7 @@ nature_trouble = st.radio(
 )
 
 # Douleurs associées au trouble moteur
-st.subheader("Avez-vous des douleurs associées à votre trouble moteur ?")
+st.subheader("Avez-vous des douleurs associées à votre trouble moteur ?*")
 douleurs = st.radio(
     "",
     ('Oui, constamment', 'Oui, fréquemment', 'Oui, de temps en temps', 'Non'),
@@ -538,7 +554,7 @@ douleurs = st.radio(
 )
 
 # Aides techniques
-st.subheader("Utilisez-vous des aides techniques autres que la planche de transfert ? (ex. : fauteuil roulant, canne, déambulateur)")
+st.subheader("Utilisez-vous des aides techniques autres que la planche de transfert ? (ex. : fauteuil roulant, canne, déambulateur)*")
 aides_techniques = st.radio(
     "",
     ('Oui', 'Non'),
@@ -624,7 +640,8 @@ with cent_co:
 
     
 if button:
-    if all([participation == 'Oui', retrait == 'Oui', confidentialite == 'Oui', utilisation_donnees == 'Oui', ip_collection == 'Oui']):
+    if all([participation == 'Oui', retrait == 'Oui', confidentialite == 'Oui', utilisation_donnees == 'Oui', ip_collection == 'Oui', sex,
+            age!=0, autonomie, assistance_deplacement, travail, cuisine_roulant, bain_italienne, obstacles, nature_trouble, douleurs, aides_techniques]):
         write_data(document)
         st.write("### Merci d'avoir participé(e) à ce questionnaire. Ce questionnaire a été réalisé en collaboration avec Innov'Autonomie et GRHANDIOSE.")
         st.session_state.disabled = True
@@ -632,7 +649,7 @@ if button:
         st.rerun()
         
     else:
-        st.write("### Pour enregistrer vos résultats, vous devez consentir à cette étude.")
+        st.write("### Pour enregistrer vos résultats, vous devez remplir toutes les questions marquées avec *.")
      
 
 
