@@ -662,8 +662,10 @@ if button:
         time.sleep(5)
         st.rerun()
         
-    else:
+    elif all([participation == 'Oui', retrait == 'Oui', confidentialite == 'Oui', utilisation_donnees == 'Oui', ip_collection == 'Oui']):
         st.write("### Pour enregistrer vos résultats, vous devez remplir toutes les questions marquées avec *.")
+    else:
+        st.write("### Pour enregistrer vos résultats, vous devez consentir à cette étude.")
      
 
 
