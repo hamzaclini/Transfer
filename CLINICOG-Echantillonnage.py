@@ -480,6 +480,8 @@ def user_input_features():
 
 
         user_data = {"ip": ip,
+                     "sex": sex,
+                     "age": age,
                      "date": datetime.now()}
         answers_data = answers
 
